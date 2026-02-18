@@ -1,22 +1,81 @@
 const express = require("express");
-const {adminAuth} = require("./middlewares/auth");
+const {userAuth} = require("./middlewares/auth");
 const {connectDB} = require("./config/database");
 // const { default: mongoose } = require("mongoose");
 const app = express();
 const User = require("./models/user");
+const {validateSignupData} = require("./utils/validation");
+const bcrypt = require("bcrypt");
+const cookie = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookie());
+
+app.get("/login", async (req, res) => {
+    try{
+        const {emailId, password} = req.body;
+
+        // chech for email id in DB
+        const isUser = await User.findOne({emailId : emailId});
+        if(!isUser){
+            throw new Error("Invalid credentials");
+        }
+
+        const matchPassword = await bcrypt.compare(password, isUser.password);
+        
+        if(!matchPassword){
+            throw new Error("Invalid credentials");
+        }
+
+        const token = await jwt.sign({_id : isUser._id}, "secretKey", {expiresIn : "1d"});
+        res.cookie("token", token);
+
+        res.send("login successfull!!!");
+    }catch(err){
+        res.status(400).send("ERROR : " + err.message);
+    }
+})
+
+app.get("/profile", userAuth, async (req, res) => {
+    try{
+        const user = req.body;
+        res.send(user);
+
+    }catch(err){
+        res.status(500).send("something went wrong!");
+    }
+})
+
+app.get("/sendConnection", userAuth, async (req, res) => {
+    const user = req.body;
+
+    res.send("new connection req from " + user.firstName);
+})
 
 app.post("/signup", async (req, res) => {
     try {
+        // user data validation
+        validateSignupData(req);
+        
+        const {firstName, lastName, emailId, password} = req.body;
+        
+        // encryping password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
         // creating new instance of our model
-        const userData = new User(req.body);
+        const userData = new User({
+            firstName,
+            lastName,
+            emailId,
+            password : hashedPassword
+        });
 
         await userData.save();
 
         res.send("User created successfully!")
     } catch (error) {
-        res.status(500).send("Error saving user " + error.message);        
+        res.status(400).send("Error saving user " + error.message);        
     }
 })
 
