@@ -16,7 +16,7 @@ app.post("/signup", async (req, res) => {
 
         res.send("User created successfully!")
     } catch (error) {
-        res.status(500).send("Error saving user", error);        
+        res.status(500).send("Error saving user " + error.message);        
     }
 })
 
@@ -60,16 +60,31 @@ app.delete("/deleteUser", async (req, res) => {
     }
 })
 
-app.patch("/updateUser", async (req, res) => {
-    const userEmail = req.body.emailId;
-    // const query = {emailId : userEmail};
+app.patch("/updateUser/:userId", async (req, res) => {
+
+    const userId = req.params?.userId;
     const userData = req.body;
 
     try{
-        await User.findOneAndUpdate({emailId : userEmail}, userData);
+        const Allowed_Fields = [
+            "userId", "firstName", "lastName", "password", "age", "gender", "skills", "photoUrl"
+        ];
+
+        const isUpdateAllowed = Object.keys(userData).every((k) =>
+            Allowed_Fields.includes(k))
+
+        if(!isUpdateAllowed){
+            throw new Error("Update not allowed");
+        }
+        
+        if(userData?.skills.length > 10){
+            throw new Error("skills should not be more than 10");
+        }
+
+        await User.findByIdAndUpdate({_id : userId}, userData, {runValidators: true});
         res.send("user data updated");
-    }catch(err){
-        res.status(500).send("unable to update user data")
+    }catch(error){
+        res.status(400).send("unable to update user data " + error.message);
     }
 })
 
