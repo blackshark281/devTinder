@@ -22,8 +22,7 @@ const validateUpdateData = (req) => {
   ];
 
   const isUpdateValid = Object.keys(req.body).every((field) =>
-    validUpdateFields.includes(field)
-  );
+    validUpdateFields.includes(field));
 
   if (!isUpdateValid) {
     throw new Error("invalid fields");

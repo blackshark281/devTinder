@@ -17,17 +17,21 @@ router.get("/profile/view", userAuth, async (req, res) => {
 
 router.patch("/profile/edit", userAuth, async (req, res) => {
 
-    if(!validateUpdateData(req)){
-        throw new Error("unable to update user");
-    };
+    try{
+        if(!validateUpdateData(req)){
+            throw new Error("unable to update user");
+        };
+        
+        const loggedInUserData = req.user;
     
-    const loggedInUserData = req.user;
-
-    Object.keys(req.body).forEach((key) => loggedInUserData[key] = req.body[key]);
-
-    await loggedInUserData.save();
-    res.json({message : `Hello ${loggedInUserData.firstName}, your profile has been updated successfully`,
-                data : loggedInUserData});
+        Object.keys(req.body).forEach((key) => loggedInUserData[key] = req.body[key]);
+    
+        await loggedInUserData.save();
+        res.json({message : `Hello ${loggedInUserData.firstName}, your profile has been updated successfully`,
+                    data : loggedInUserData});
+    }catch(err){
+        res.status(400).send("ERROR : " + err.message)
+    }
 })
 
 router.patch("/profile/password", userAuth, async (req, res) => {
