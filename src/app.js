@@ -9,12 +9,15 @@ app.use(cookie());
 const authRoute = require("./routes/auth");
 const profileRoute = require("./routes/profile");
 const requestRoute = require("./routes/request");
+const userRoute = require("./routes/user");
 
 app.use("/", authRoute);
 
 app.use("/", profileRoute);
 
 app.use("/", requestRoute);
+
+app.use("/", userRoute);
 
 // app.delete("/deleteUser", async (req, res) => {
 //     const userEmail = req.body.emailId;
