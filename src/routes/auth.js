@@ -55,7 +55,11 @@ router.post("/login", async (req, res) => {
         }
 
         const token = await jwt.sign({_id : isUser._id}, "secretKey", {expiresIn : "1d"});
-        res.cookie("token", token);
+        res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,        // REQUIRED in production
+    sameSite: "none"     // REQUIRED for cross-domain
+});
 
         res.send(isUser);
     }catch(err){
