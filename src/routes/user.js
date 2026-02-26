@@ -54,6 +54,7 @@ router.get("/user/connections", userAuth, async (req, res) => {
 
 router.get("/feed", userAuth, async (req, res) => {
     try{
+        res.set("Cache-Control", "no-store");
         const loggedInUser = req.user;
 
         const page = req.query.page || 1;
