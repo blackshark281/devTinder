@@ -9,15 +9,18 @@ router.get("/user/requests/received", userAuth, async (req, res) => {
     try {
         const loggedInUser = req.user;
         const requests = await ConnectionRequest.find({receiverId: loggedInUser._id, status: "interested"})
-        .populate("senderId", "firstName lastName photoUrl");
+        .populate("senderId", "firstName lastName photoUrl age gender");
 
         if(requests.length === 0){
             return res.status(200).json({message:"no new requests"});
         }
 
-        const data = requests.map(row => row.senderId);
+        // const data = requests.map(row => row.senderId);
 
-        res.json({ data });    
+        res.json({
+      message: "Data fetched successfully",
+      data: requests,
+    });   
     }
     catch (err) {
         res.status(400).json({ error: err.message });
