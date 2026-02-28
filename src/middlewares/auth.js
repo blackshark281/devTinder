@@ -7,7 +7,7 @@ const userAuth = (async (req, res, next) => {
         if(!token){
             return res.status(401).send("please login again");
         }
-        const resolvedToken = await jwt.verify(token, "secretKey");
+        const resolvedToken = await jwt.verify(token, process.env.SECRET_KEY);
         
         if(!resolvedToken){
             res.status(404).send("invalid token");

@@ -26,7 +26,7 @@ router.post("/signup", async (req, res) => {
 
         const savedUser = await userData.save();
     // const token = await savedUser.getJWT();
-    const token = await jwt.sign({_id : savedUser._id}, "secretKey", {expiresIn : "1d"});
+    const token = await jwt.sign({_id : savedUser._id}, process.env.SECRET_KEY, {expiresIn : "1d"});
 
     res.cookie("token", token, {
       expires: new Date(Date.now() + 8 * 3600000),
@@ -54,7 +54,7 @@ router.post("/login", async (req, res) => {
             throw new Error("Invalid credentials");
         }
 
-        const token = await jwt.sign({_id : isUser._id}, "secretKey", {expiresIn : "1d"});
+        const token = await jwt.sign({_id : isUser._id}, process.env.SECRET_KEY, {expiresIn : "1d"});
         res.cookie("token", token, {
     httpOnly: true,
     secure: true,        // REQUIRED in production
