@@ -15,6 +15,8 @@ const initializeSocket = (server) => {
     cors: {
       // origin: "http://localhost:5173",
       origin: "https://dev-tinder-web-murex.vercel.app",
+      methods: ["GET", "POST"],
+      credentials: true
     },
   });
 
