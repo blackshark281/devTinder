@@ -22,6 +22,7 @@ const profileRoute = require("./routes/profile");
 const requestRoute = require("./routes/request");
 const userRoute = require("./routes/user");
 const chatRoute = require("./routes/chat");
+const aiChat = require("./routes/aiChat");
 
 const server = http.createServer(app);
 initializeSocket(server);
@@ -35,6 +36,8 @@ app.use("/", requestRoute);
 app.use("/", userRoute);
 
 app.use("/", chatRoute);
+
+app.use("/", aiChat);
 
 // app.delete("/deleteUser", async (req, res) => {
 //     const userEmail = req.body.emailId;
